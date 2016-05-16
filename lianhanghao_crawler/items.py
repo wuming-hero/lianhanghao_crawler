@@ -11,6 +11,8 @@ import scrapy
 class LianhanghaoCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    bank_id = scrapy.Field()
+    bank = scrapy.Field()
     bank_number = scrapy.Field()
     bank_name = scrapy.Field()
     phone = scrapy.Field()
@@ -19,3 +21,4 @@ class LianhanghaoCrawlerItem(scrapy.Item):
     province_name = scrapy.Field()
     city = scrapy.Field()
     city_name = scrapy.Field()
+
