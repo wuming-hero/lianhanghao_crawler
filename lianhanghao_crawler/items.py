@@ -15,3 +15,7 @@ class LianhanghaoCrawlerItem(scrapy.Item):
     bank_name = scrapy.Field()
     phone = scrapy.Field()
     address = scrapy.Field()
+    province = scrapy.Field()
+    province_name = scrapy.Field()
+    city = scrapy.Field()
+    city_name = scrapy.Field()

@@ -8,5 +8,6 @@
 
 class LianhanghaoCrawlerPipeline(object):
     def process_item(self, item, spider):
-        print '---------------item: %s'  % item
+        print '---------------item: %s' % item
+        
         return item
