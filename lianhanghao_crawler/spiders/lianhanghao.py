@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
 import urlparse
+
 import requests
 import scrapy
-from scrapy.loader import ItemLoader, Identity
+from scrapy.loader import ItemLoader
 from scrapy.selector import Selector
-from urllib3 import request
+
 from lianhanghao_crawler.items import LianhanghaoCrawlerItem
 
 
