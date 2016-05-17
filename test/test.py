@@ -1,7 +1,11 @@
 # -*- coding:utf-8-*-
 import json
+from datetime import datetime
 
+import pymysql
 import requests
+
+from common.helpers import daytime_formate
 
 bank_dict = {'38': '美国摩根大通银行', '24': '徽商银行', '54': '渣打银行', '10': '中信银行', '61': '德国西德银行',
              '64': '加拿大蒙特利尔银行', '7': '中国农业发展银行', '25': '城市信用社', '66': '德富泰银行', '36': '美国花旗银行', '39': '日本三菱东京日联银行',
@@ -32,7 +36,31 @@ bank_list = [('1', '中国工商银行'), ('2', '中国农业银行'), ('3', '�
              ('62', '德国巴伐利亚州银行'), ('63', '瑞士信贷银行'), ('64', '加拿大蒙特利尔银行'), ('65', '澳大利亚和新西兰银行集团'),
              ('66', '德富泰银行'), ('67', '厦门国际银行'), ('68', '法国巴黎银行（中国）'), ('69', '平安银行'), ('70', '青岛国际银行'),
              ('71', '华一银行')]
-bank_list = []
-new_banks = sorted(bank_dict.items(), key=lambda a: int(a[0]))
-print new_banks
-# for k, v in bank_dict.iteritems():
+
+for item in bank_list:
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password="",
+                                 db='fula_local',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+
+    try:
+        with connection.cursor() as cursor:
+            now_time = daytime_formate(datetime.now())
+            insert_data = ('', item[1], now_time, now_time)
+            sql = "INSERT INTO fl_bank (id, bank, createTime, modifyTime) VALUES (%s, %s, %s,%s)"
+            # print '--------item: %s--------data: %s' % (item, insert_data)
+            cursor.execute(sql, insert_data)
+        # connection is not autocommit by default. So you must commit to save
+        # your changes.
+        connection.commit()
+
+        # with connection.cursor() as cursor:
+        #     # Read a single record
+        #     sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
+        #     cursor.execute(sql, ('webmaster@python.org',))
+        #     result = cursor.fetchone()
+        #     print(result)
+    finally:
+        connection.close()

@@ -31,24 +31,32 @@ class LianhanghaoCrawlerPipeline(object):
 
         try:
             with connection.cursor() as cursor:
+                # 修正省份数据
+                sql = "SELECT * FROM base_province WHERE provinceName=%s"
+                cursor.execute(sql, (item['province_name'],))
+                result = cursor.fetchone()
+                if result:
+                    item['province'] = result['provinceCode']
+                # 修正城市数据
+                sql = "SELECT * FROM base_city WHERE parentCode=%s AND cityName=%s"
+                cursor.execute(sql, (item['province'], item['city_name']))
+                ret = cursor.fetchone()
+                if ret:
+                    item['city'] = ret['cityCode']
+
+            with connection.cursor() as cursor:
                 # Create a new record
                 now_time = daytime_formate(datetime.now())
                 insert_data = (item['bank_id'], item['bank'], item['bank_number'], item['bank_name'], item['province'],
                                item['province_name'], item['city'], item['city_name'], item['phone'], item['address'],
                                now_time, now_time)
+                print '--------item: %s---------data: %s' % (item, insert_data)
                 sql = "INSERT INTO fl_lianhanghao (bankId, bank, bankNumber, bankName, province, provinceName, city, cityName, phone, address, createTime, modifyTime) VALUES (%s, %s, %s,%s, %s, %s,%s, %s, %s,%s, %s, %s)"
-                # print '--------item: %s--------data: %s' % (item, insert_data)
                 cursor.execute(sql, insert_data)
 
             # connection is not autocommit by default. So you must commit to save
             # your changes.
             connection.commit()
 
-            # with connection.cursor() as cursor:
-            #     # Read a single record
-            #     sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
-            #     cursor.execute(sql, ('webmaster@python.org',))
-            #     result = cursor.fetchone()
-            #     print(result)
         finally:
             connection.close()
