@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 
 import pymysql
@@ -19,17 +20,24 @@ province_dict = {'4': '山西省', '24': '贵州省', '8': '黑龙江省', '10':
 try:
     with connection.cursor() as cursor:
         # Read a single record
-        sql = "SELECT `id`, `password` FROM `users` WHERE `email`=%s"
-        cursor.execute(sql, ('webmaster@python.org',))
-        result = cursor.fetchone()
-        print(result)
+        sql = "SELECT * from fl_lianhanghao where city < 11000 group BY city"
+        cursor.execute(sql, ())
+        result = cursor.fetchall()
+        print len(result), result
 
-    with connection.cursor() as cursor:
-        now_time = daytime_formate(datetime.now())
-        insert_data = ('', '', now_time, now_time)
-        sql = "INSERT INTO fl_bank (id, bank, createTime, modifyTime) VALUES (%s, %s, %s,%s)"
-        # print '--------item: %s--------data: %s' % (item, insert_data)
-        cursor.execute(sql, insert_data)
+        for item in result:
+            sql = "SELECT * from `base_city` WHERE parentCode = %s and cityName=%s"
+            cursor.execute(sql, ('650000', item['cityName']))
+            ret = cursor.fetchone()
+            if ret:
+                update_sql = "UPDATE `fl_lianhanghao` SET city = %s where city=%s"
+                cursor.execute(update_sql, (ret['cityCode'], item['city']))
+    # with connection.cursor() as cursor:
+    #     now_time = daytime_formate(datetime.now())
+    #     insert_data = ('', '', now_time, now_time)
+    #     sql = "INSERT INTO fl_bank (id, bank, createTime, modifyTime) VALUES (%s, %s, %s,%s)"
+    #     # print '--------item: %s--------data: %s' % (item, insert_data)
+    #     cursor.execute(sql, insert_data)
     # connection is not autocommit by default. So you must commit to save
     # your changes.
     connection.commit()

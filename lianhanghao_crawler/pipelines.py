@@ -50,7 +50,7 @@ class LianhanghaoCrawlerPipeline(object):
                 insert_data = (item['bank_id'], item['bank'], item['bank_number'], item['bank_name'], item['province'],
                                item['province_name'], item['city'], item['city_name'], item['phone'], item['address'],
                                now_time, now_time)
-                print '--------item: %s---------data: %s' % (item, insert_data)
+                # print '--------item: %s---------data: %s' % (item, insert_data)
                 sql = "INSERT INTO fl_lianhanghao (bankId, bank, bankNumber, bankName, province, provinceName, city, cityName, phone, address, createTime, modifyTime) VALUES (%s, %s, %s,%s, %s, %s,%s, %s, %s,%s, %s, %s)"
                 cursor.execute(sql, insert_data)
 
