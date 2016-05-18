@@ -4,12 +4,21 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from datetime import datetime
 import pymysql
+from datetime import datetime
+
 from common.helpers import daytime_formate
 
 
 class LianhanghaoCrawlerPipeline(object):
+    def __init__(self):
+        self.connection = pymysql.connect(host='localhost',
+                                          user='root',
+                                          password="",
+                                          db='fula_local',
+                                          charset='utf8mb4',
+                                          cursorclass=pymysql.cursors.DictCursor)
+
     def process_item(self, item, spider):
         # print '---------------item: %s' % item
         # item = {'address': [u'\u5c71\u897f\u7701\u592a\u539f\u5e02\u8fce\u6cfd\u5927\u8857213\u53f7'],
@@ -22,15 +31,9 @@ class LianhanghaoCrawlerPipeline(object):
         #         'phone': [u'0351-8385093'],
         #         'province': [u'4'],
         #         'province_name': [u'\u5c71\u897f\u7701']}
-        connection = pymysql.connect(host='localhost',
-                                     user='root',
-                                     password="",
-                                     db='fula_local',
-                                     charset='utf8mb4',
-                                     cursorclass=pymysql.cursors.DictCursor)
 
         try:
-            with connection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 # 修正省份数据
                 sql = "SELECT * FROM base_province WHERE provinceName=%s"
                 cursor.execute(sql, (item['province_name'],))
@@ -44,7 +47,6 @@ class LianhanghaoCrawlerPipeline(object):
                 if ret:
                     item['city'] = ret['cityCode']
 
-            with connection.cursor() as cursor:
                 # Create a new record
                 now_time = daytime_formate(datetime.now())
                 insert_data = (item['bank_id'], item['bank'], item['bank_number'], item['bank_name'], item['province'],
@@ -53,10 +55,9 @@ class LianhanghaoCrawlerPipeline(object):
                 # print '--------item: %s---------data: %s' % (item, insert_data)
                 sql = "INSERT INTO fl_lianhanghao (bankId, bank, bankNumber, bankName, province, provinceName, city, cityName, phone, address, createTime, modifyTime) VALUES (%s, %s, %s,%s, %s, %s,%s, %s, %s,%s, %s, %s)"
                 cursor.execute(sql, insert_data)
-
-            # connection is not autocommit by default. So you must commit to save
-            # your changes.
-            connection.commit()
-
-        finally:
-            connection.close()
+            # connection is not autocommit by default. So you must commit to save your changes.
+            self.connection.commit()
+        except Exception, e:
+            print '-----------------------', e
+            # finally:
+            #     connection.close()
