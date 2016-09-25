@@ -109,7 +109,6 @@ class LianhanghaoSpider(scrapy.Spider):
         #     yield request
 
     def parse_item(self, text, **kwargs):
-        pass
         sel = Selector(text=text)
         l = ItemLoader(item=LianhanghaoCrawlerItem(), selector=Selector(text=text))
         # 取 tr下面的N个 td 的内容 xpath 的语法竟然是从下标1开始的取值的
@@ -136,7 +135,7 @@ class LianhanghaoSpider(scrapy.Spider):
     def get_city(self, province):
         url = "%s/area.php?act=ajax&id=%s" % (self.domain, province)
         param = {'act': 'ajax', 'id': province}
-        response = requests.get(url, param)
+        response = requests.get(url, params=param)
         city_list = json.loads(response.content)['city']
         return city_list
 

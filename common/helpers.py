@@ -15,8 +15,6 @@ from pyramid.threadlocal import get_current_registry
 
 from webhelpers.html import literal
 from webhelpers.html.tags import *
-from lllserver.common.encoding import smart_str
-from lllserver.common.files import get_file_name
 
 
 def css_link(request, cssname):
@@ -442,13 +440,6 @@ class Tools(object):
         week = int(time.strftime("%w"))
         return week
 
-
-def downloadFile(url):
-    filename = get_file_name(url)
-    urllib.urlretrieve(url, filename)
-    return open(filename, 'rb')
-
-
 def tagsplits(tags):
     if tags is None:
         return []
@@ -583,17 +574,17 @@ def content_format_for_device_print(content, length, head=''):
     return result
 
 
-def dict_to_xml(dict_data):
-    if isinstance(dict_data, dict):
-        xml = '<xml>'
-        for k, v in dict_data.items():
-            if isinstance(v, (int, float)):
-                xml = '%s<%s>%s</%s>' % (xml, k, v, k)
-            else:
-                xml = '%s<%s><![CDATA[%s]]></%s>' % (xml, k, v, k)
-        xml = '%s%s' % (xml, '</xml>')
-        return smart_str(xml)
-    return None
+# def dict_to_xml(dict_data):
+#     if isinstance(dict_data, dict):
+#         xml = '<xml>'
+#         for k, v in dict_data.items():
+#             if isinstance(v, (int, float)):
+#                 xml = '%s<%s>%s</%s>' % (xml, k, v, k)
+#             else:
+#                 xml = '%s<%s><![CDATA[%s]]></%s>' % (xml, k, v, k)
+#         xml = '%s%s' % (xml, '</xml>')
+#         return smart_str(xml)
+#     return None
 
 
 def parse(html):
